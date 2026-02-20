@@ -1,0 +1,5 @@
+{
+  "name": "Islamic Companion",
+  "description": "A comprehensive Islamic app featuring real-time prayer times, Quran search, daily verses, and Ramadan countdown.",
+  "requestFramePermissions": ["geolocation"]
+}
