@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MoreVertical, X, MessageCircle, Facebook, Phone, User, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MoreVertical, X, MessageCircle, Facebook, Phone, User, ArrowLeft, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import IslamicAI from './IslamicAI';
 import { cn } from '../lib/utils';
@@ -8,6 +8,34 @@ import { useNavigate } from 'react-router-dom';
 export default function DeveloperPage() {
   const [showAI, setShowAI] = useState(false);
   const navigate = useNavigate();
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 p-4 lg:p-8">
@@ -48,6 +76,27 @@ export default function DeveloperPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Install App Button */}
+              {isInstallable && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleInstallClick}
+                  className="mx-auto flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all group relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="relative flex items-center gap-3">
+                    <div className="bg-white/20 p-2 rounded-lg">
+                      <Download className="w-5 h-5 animate-bounce" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-xs font-medium opacity-90">ডাউনলোড করুন</div>
+                      <div className="font-bold font-bengali">ইসলামিক অ্যাপ</div>
+                    </div>
+                  </div>
+                </motion.button>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
                 <a 

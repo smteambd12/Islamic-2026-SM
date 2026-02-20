@@ -12,6 +12,7 @@ import IslamicEvents from './components/IslamicEvents';
 import DateHeader from './components/DateHeader';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import DeveloperPage from './components/DeveloperPage';
+import IslamicQuiz from './components/IslamicQuiz';
 import { useLocation } from './hooks/useLocation';
 import { getPrayerTimes, PrayerTimes } from './services/api';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -65,6 +66,7 @@ function AppContent() {
         <Route path="/prayer-info" element={<PrayerLearning />} />
         <Route path="/ramadan" element={<Ramadan timings={prayerTimes} />} />
         <Route path="/events" element={<IslamicEvents />} />
+        <Route path="/quiz" element={<IslamicQuiz />} />
         <Route path="/developer" element={<DeveloperPage />} />
       </Routes>
       <GlobalAudioPlayer />
