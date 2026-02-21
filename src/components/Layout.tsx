@@ -54,6 +54,7 @@ export default function Layout({ children }: LayoutProps) {
   const navItems = [
     { path: '/', label: 'হোম', icon: Home },
     { path: '/ramadan', label: 'রমজান', icon: Moon },
+    { path: '/daily', label: 'নিত্যদিন', icon: Heart },
     { path: '/quran', label: 'কুরআন', icon: BookOpen },
     { path: '/prayer-info', label: 'নামাজ', icon: Activity },
     { path: '/tasbeeh', label: 'তাসবীহ', icon: AlignCenter },

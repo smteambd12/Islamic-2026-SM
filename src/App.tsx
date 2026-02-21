@@ -21,6 +21,7 @@ import { useLocation } from './hooks/useLocation';
 import { getPrayerTimes, PrayerTimes } from './services/api';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AudioProvider } from './context/AudioContext';
+import DailyLife from './components/DailyLife';
 
 function Dashboard({ timings, loading }: { timings: PrayerTimes | null, loading: boolean }) {
   return (
@@ -82,6 +83,7 @@ function AppContent() {
         <Route path="/tasbeeh" element={<Tasbeeh />} />
         <Route path="/prayer-info" element={<PrayerLearning />} />
         <Route path="/ramadan" element={<Ramadan timings={prayerTimes} />} />
+        <Route path="/daily" element={<DailyLife />} />
         <Route path="/events" element={<IslamicEvents />} />
         <Route path="/quiz" element={<IslamicQuiz />} />
         <Route path="/ai" element={<IslamicAI />} />

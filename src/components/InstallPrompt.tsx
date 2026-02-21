@@ -8,8 +8,11 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     const handler = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
+      
       // Check if app is already installed
       const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches;
       if (!isAppInstalled) {
@@ -25,14 +28,24 @@ export default function InstallPrompt() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      console.error("No deferred prompt found");
+      return;
+    }
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
+    try {
+      // Show the install prompt
+      await deferredPrompt.prompt();
+      
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      
+      // We've used the prompt, and can't use it again, throw it away
       setDeferredPrompt(null);
       setShowPrompt(false);
+    } catch (error) {
+      console.error("Error showing install prompt:", error);
     }
   };
 
