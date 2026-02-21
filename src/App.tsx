@@ -16,6 +16,7 @@ import IslamicQuiz from './components/IslamicQuiz';
 import CommunityRequests from './components/CommunityRequests';
 import IslamicAI from './components/IslamicAI';
 import SplashScreen from './components/SplashScreen';
+import InstallPrompt from './components/InstallPrompt';
 import { useLocation } from './hooks/useLocation';
 import { getPrayerTimes, PrayerTimes } from './services/api';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -88,6 +89,7 @@ function AppContent() {
         <Route path="/developer" element={<DeveloperPage />} />
       </Routes>
       <GlobalAudioPlayer />
+      <InstallPrompt />
     </>
   );
 }
