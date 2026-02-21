@@ -13,6 +13,9 @@ import DateHeader from './components/DateHeader';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import DeveloperPage from './components/DeveloperPage';
 import IslamicQuiz from './components/IslamicQuiz';
+import CommunityRequests from './components/CommunityRequests';
+import IslamicAI from './components/IslamicAI';
+import SplashScreen from './components/SplashScreen';
 import { useLocation } from './hooks/useLocation';
 import { getPrayerTimes, PrayerTimes } from './services/api';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -35,12 +38,11 @@ function Dashboard({ timings, loading }: { timings: PrayerTimes | null, loading:
   );
 }
 
-import CommunityRequests from './components/CommunityRequests';
-
 function AppContent() {
   const { latitude, longitude, loading: locationLoading } = useLocation();
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -58,6 +60,10 @@ function AppContent() {
 
   const isLoading = loading || locationLoading;
 
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
+
   return (
     <>
       <Routes>
@@ -69,6 +75,7 @@ function AppContent() {
         <Route path="/ramadan" element={<Ramadan timings={prayerTimes} />} />
         <Route path="/events" element={<IslamicEvents />} />
         <Route path="/quiz" element={<IslamicQuiz />} />
+        <Route path="/ai" element={<IslamicAI />} />
         <Route path="/community" element={<CommunityRequests />} />
         <Route path="/developer" element={<DeveloperPage />} />
       </Routes>
