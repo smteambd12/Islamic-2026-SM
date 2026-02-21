@@ -64,6 +64,8 @@ export default function IslamicQuiz() {
     }
   }, []);
 
+  const [quizSession, setQuizSession] = useState(0);
+
   useEffect(() => {
     if (!selectedCategory) return;
 
@@ -87,7 +89,9 @@ export default function IslamicQuiz() {
     setShowScore(false);
     setIsAnswered(false);
     setSelectedOption(null);
-  }, [difficulty, selectedCategory]);
+  }, [difficulty, selectedCategory, quizSession]);
+
+  // ... (existing code)
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,6 +158,10 @@ export default function IslamicQuiz() {
       setShowScore(true);
       updateUserStats(score);
     }
+  };
+
+  const playAgain = () => {
+    setQuizSession(prev => prev + 1); // Trigger re-shuffle
   };
 
   const resetQuiz = () => {
@@ -475,11 +483,18 @@ export default function IslamicQuiz() {
 
             <div className="flex flex-col gap-3">
               <button
-                onClick={resetQuiz}
+                onClick={playAgain}
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors w-full"
               >
                 <RefreshCw className="w-5 h-5" />
-                অন্য ক্যাটাগরি খেলুন
+                আবার খেলুন (নতুন প্রশ্ন)
+              </button>
+              <button
+                onClick={resetQuiz}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-xl font-bold hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors w-full"
+              >
+                <Brain className="w-5 h-5" />
+                অন্য ক্যাটাগরি
               </button>
               <button
                 onClick={() => setShowLeaderboard(true)}

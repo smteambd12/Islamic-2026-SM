@@ -53,23 +53,31 @@ export default function QuranSection() {
   const fetchRandomVerses = async () => {
     try {
       setLoadingVerses(true);
-      // Fetch a random page (approx 1-604)
-      const randomPage = Math.floor(Math.random() * 604) + 1;
-      const response = await axios.get(`https://api.alquran.cloud/v1/page/${randomPage}/editions/quran-uthmani,bn.bengali`);
+      const newVerses: RandomVerse[] = [];
       
-      const arabicData = response.data.data[0].ayahs;
-      const bengaliData = response.data.data[1].ayahs;
+      // Fetch 3 random verses in parallel to avoid 500 error on page endpoint
+      const promises = Array(3).fill(0).map(() => {
+        const randomAyah = Math.floor(Math.random() * 6236) + 1;
+        return axios.get(`https://api.alquran.cloud/v1/ayah/${randomAyah}/editions/quran-uthmani,bn.bengali`);
+      });
 
-      const merged = arabicData.map((ayah: any, idx: number) => ({
-        number: ayah.number,
-        text: ayah.text,
-        translation: bengaliData[idx].text,
-        surah: ayah.surah,
-        numberInSurah: ayah.numberInSurah,
-        audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah.number}.mp3`
-      }));
+      const results = await Promise.all(promises);
 
-      setRandomVerses(merged);
+      results.forEach(response => {
+        const arabic = response.data.data[0];
+        const bengali = response.data.data[1];
+        
+        newVerses.push({
+          number: arabic.number,
+          text: arabic.text,
+          translation: bengali.text,
+          surah: arabic.surah,
+          numberInSurah: arabic.numberInSurah,
+          audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${arabic.number}.mp3`
+        });
+      });
+
+      setRandomVerses(newVerses);
     } catch (error) {
       console.error("Error fetching random verses:", error);
     } finally {
