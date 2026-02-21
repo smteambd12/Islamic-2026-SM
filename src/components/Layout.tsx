@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun, BookOpen, Clock, Home, Menu, X, Heart, Activity, Calendar, AlignCenter, Star, Brain } from 'lucide-react';
+import { Moon, Sun, BookOpen, Clock, Home, Menu, X, Heart, Activity, Calendar, AlignCenter, Star, Brain, MessageSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -60,6 +60,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: '/events', label: 'ইভেন্ট', icon: Star },
     { path: '/quiz', label: 'কুইজ', icon: Brain },
     { path: '/bookmarks', label: 'বুকমার্ক', icon: Heart },
+    { path: '/community', label: 'কমিউনিটি', icon: MessageSquare },
   ];
 
   // Background gradients based on time

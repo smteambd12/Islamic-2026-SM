@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle, CheckCircle2, XCircle, Trophy, RefreshCw, ChevronRight, Brain, Star, User, Medal } from 'lucide-react';
+import { HelpCircle, CheckCircle2, XCircle, Trophy, RefreshCw, ChevronRight, Brain, Star, User, Medal, Globe, Users, BookOpen, History, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn, toBengaliNumber } from '../lib/utils';
 import { QUIZ_QUESTIONS, Question } from '../data/quizData';
+import { QUIZ_CATEGORIES, getQuestionsByCategory, QuizCategory } from '../services/quizService';
 
 interface LeaderboardEntry {
   name: string;
   score: number;
   total: number;
   date: string;
+  category: string;
+}
+
+interface UserStats {
+  totalScore: number;
+  quizzesPlayed: number;
+  correctAnswers: number;
+  history: LeaderboardEntry[];
 }
 
 export default function IslamicQuiz() {
@@ -19,40 +28,66 @@ export default function IslamicQuiz() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [difficulty, setDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
-  // New states for user name and leaderboard
+  // User Data & Stats
   const [userName, setUserName] = useState('');
   const [isNameEntered, setIsNameEntered] = useState(false);
+  const [userStats, setUserStats] = useState<UserStats>({
+    totalScore: 0,
+    quizzesPlayed: 0,
+    correctAnswers: 0,
+    history: []
+  });
+
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
-    // Load leaderboard
-    const savedLeaderboard = localStorage.getItem('quiz-leaderboard');
-    if (savedLeaderboard) {
-      setLeaderboard(JSON.parse(savedLeaderboard));
+    // Load local data
+    const savedStats = localStorage.getItem('quiz-user-stats');
+    if (savedStats) {
+      setUserStats(JSON.parse(savedStats));
     }
 
-    // Check if user name is already saved in session
     const savedName = sessionStorage.getItem('quiz-username');
     if (savedName) {
       setUserName(savedName);
       setIsNameEntered(true);
     }
 
-    let questions = [...QUIZ_QUESTIONS];
+    // Load global (local multi-user) leaderboard
+    const savedLeaderboard = localStorage.getItem('quiz-leaderboard');
+    if (savedLeaderboard) {
+      setLeaderboard(JSON.parse(savedLeaderboard));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!selectedCategory) return;
+
+    let questions = [...getQuestionsByCategory(selectedCategory)];
+
     if (difficulty !== 'all') {
       questions = questions.filter(q => q.difficulty === difficulty);
     }
-    // Shuffle questions
-    questions = questions.sort(() => Math.random() - 0.5);
+    
+    // Fallback if no questions for difficulty
+    if (questions.length === 0 && difficulty !== 'all') {
+       questions = [...getQuestionsByCategory(selectedCategory)];
+    }
+
+    // Shuffle and limit to 10 questions for a "Session"
+    questions = questions.sort(() => Math.random() - 0.5).slice(0, 10);
+    
     setFilteredQuestions(questions);
     setCurrentQuestionIndex(0);
     setScore(0);
     setShowScore(false);
     setIsAnswered(false);
     setSelectedOption(null);
-  }, [difficulty]);
+  }, [difficulty, selectedCategory]);
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,20 +97,40 @@ export default function IslamicQuiz() {
     }
   };
 
-  const saveScore = (finalScore: number) => {
+  const updateUserStats = (finalScore: number) => {
     const newEntry: LeaderboardEntry = {
       name: userName,
       score: finalScore,
       total: filteredQuestions.length,
-      date: new Date().toLocaleDateString('bn-BD')
+      date: new Date().toLocaleDateString('bn-BD'),
+      category: QUIZ_CATEGORIES.find(c => c.id === selectedCategory)?.title || 'General'
     };
 
-    const updatedLeaderboard = [...leaderboard, newEntry]
-      .sort((a, b) => (b.score / b.total) - (a.score / a.total)) // Sort by percentage
-      .slice(0, 10); // Keep top 10
+    const newStats = {
+      totalScore: userStats.totalScore + finalScore,
+      quizzesPlayed: userStats.quizzesPlayed + 1,
+      correctAnswers: userStats.correctAnswers + finalScore,
+      history: [newEntry, ...userStats.history].slice(0, 50) // Keep last 50 games
+    };
 
-    setLeaderboard(updatedLeaderboard);
-    localStorage.setItem('quiz-leaderboard', JSON.stringify(updatedLeaderboard));
+    setUserStats(newStats);
+    localStorage.setItem('quiz-user-stats', JSON.stringify(newStats));
+
+    // Update Global Leaderboard (Local Storage based)
+    const savedLeaderboard = localStorage.getItem('quiz-leaderboard');
+    let currentLeaderboard: LeaderboardEntry[] = savedLeaderboard ? JSON.parse(savedLeaderboard) : [];
+    
+    // Add new entry
+    currentLeaderboard.push(newEntry);
+    
+    // Sort by score
+    currentLeaderboard.sort((a, b) => b.score - a.score);
+    
+    // Keep top 100
+    currentLeaderboard = currentLeaderboard.slice(0, 100);
+    
+    setLeaderboard(currentLeaderboard);
+    localStorage.setItem('quiz-leaderboard', JSON.stringify(currentLeaderboard));
   };
 
   const handleAnswerClick = (optionIndex: number) => {
@@ -97,13 +152,13 @@ export default function IslamicQuiz() {
       setSelectedOption(null);
     } else {
       setShowScore(true);
-      saveScore(score);
+      updateUserStats(score);
     }
   };
 
   const resetQuiz = () => {
-    const questions = [...filteredQuestions].sort(() => Math.random() - 0.5);
-    setFilteredQuestions(questions);
+    setSelectedCategory(null);
+    setFilteredQuestions([]);
     setCurrentQuestionIndex(0);
     setScore(0);
     setShowScore(false);
@@ -146,6 +201,221 @@ export default function IslamicQuiz() {
     );
   }
 
+  // History View
+  if (showHistory) {
+    return (
+      <div className="space-y-6 pb-20">
+        <div className="flex items-center gap-4 mb-6">
+          <button 
+            onClick={() => setShowHistory(false)}
+            className="p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800"
+          >
+            <ChevronRight className="w-6 h-6 rotate-180" />
+          </button>
+          <h2 className="text-2xl font-bold font-bengali text-stone-800 dark:text-stone-100 flex items-center gap-2">
+            <History className="w-6 h-6 text-blue-500" />
+            আমার ইতিহাস
+          </h2>
+        </div>
+
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-sm border border-stone-100 dark:border-stone-800">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl text-center">
+              <p className="text-sm text-stone-500 dark:text-stone-400 font-bengali">মোট স্কোর</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">{toBengaliNumber(userStats.totalScore)}</p>
+            </div>
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+              <p className="text-sm text-stone-500 dark:text-stone-400 font-bengali">কুইজ খেলেছেন</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono">{toBengaliNumber(userStats.quizzesPlayed)}</p>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-bold text-stone-400 uppercase mb-4">সাম্প্রতিক ফলাফল</h3>
+          
+          <div className="space-y-3">
+            {userStats.history.length > 0 ? (
+              userStats.history.map((entry, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl">
+                  <div>
+                    <p className="font-bold font-bengali text-stone-800 dark:text-stone-100">{entry.category}</p>
+                    <p className="text-xs text-stone-400">{entry.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      {toBengaliNumber(entry.score)} / {toBengaliNumber(entry.total)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-stone-500 py-8 font-bengali">এখনও কোন ইতিহাস নেই</p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Leaderboard View
+  if (showLeaderboard) {
+    return (
+      <div className="space-y-6 pb-20">
+        <div className="flex items-center gap-4 mb-6">
+          <button 
+            onClick={() => setShowLeaderboard(false)}
+            className="p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800"
+          >
+            <ChevronRight className="w-6 h-6 rotate-180" />
+          </button>
+          <h2 className="text-2xl font-bold font-bengali text-stone-800 dark:text-stone-100 flex items-center gap-2">
+            <Trophy className="w-6 h-6 text-yellow-500" />
+            গ্লোবাল লিডারবোর্ড
+          </h2>
+        </div>
+
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-sm border border-stone-100 dark:border-stone-800">
+          <div className="flex gap-4 mb-6 border-b border-stone-100 dark:border-stone-800 pb-4">
+            <div className="flex-1 text-center">
+              <p className="text-xs text-stone-400 font-bengali uppercase mb-1">আপনার মোট স্কোর</p>
+              <p className="text-3xl font-bold text-emerald-600 font-mono">{toBengaliNumber(userStats.totalScore)}</p>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-bold text-stone-400 uppercase mb-4 flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            শীর্ষ স্কোরার (গ্লোবাল)
+          </h3>
+          
+          <div className="space-y-3">
+            {leaderboard.length > 0 ? (
+              leaderboard.map((entry, idx) => (
+              <div key={idx} className={cn(
+                "flex items-center justify-between p-4 rounded-xl",
+                entry.name === userName ? "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800" : "bg-stone-50 dark:bg-stone-800/50"
+              )}>
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center font-bold font-mono",
+                    idx === 0 ? "bg-yellow-100 text-yellow-700" :
+                    idx === 1 ? "bg-stone-200 text-stone-700" :
+                    idx === 2 ? "bg-orange-100 text-orange-700" :
+                    "bg-stone-100 dark:bg-stone-800 text-stone-500"
+                  )}>
+                    {idx + 1}
+                  </div>
+                  <div>
+                    <p className="font-bold font-bengali text-stone-800 dark:text-stone-100 flex items-center gap-2">
+                      {entry.name}
+                      {entry.name === userName && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">আপনি</span>}
+                    </p>
+                    <p className="text-xs text-stone-400 flex items-center gap-1">
+                      {entry.category} • {entry.date}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                    {toBengaliNumber(entry.score)}/{toBengaliNumber(entry.total)}
+                  </span>
+                </div>
+              </div>
+            ))
+            ) : (
+              <div className="text-center py-8 text-stone-500 font-bengali">
+                এখনও কেউ কুইজ খেলেনি। আপনিই প্রথম হোন!
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Category Selection View
+  if (!selectedCategory && !showLeaderboard) {
+    return (
+      <div className="space-y-6 pb-20">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold font-bengali text-stone-800 dark:text-stone-100 flex items-center gap-2">
+            <Brain className="w-6 h-6 text-emerald-600" />
+            ইসলামিক কুইজ জোন
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="p-2 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-500 hover:bg-blue-100 hover:text-blue-600 transition-colors"
+              title="ইতিহাস"
+            >
+              <History className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="p-2 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-500 hover:bg-emerald-100 hover:text-emerald-600 transition-colors"
+              title="লিডারবোর্ড"
+            >
+              <Trophy className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* User Stats Summary Card */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-bengali text-emerald-100 text-sm">স্বাগতম,</p>
+                <h3 className="font-bold text-xl font-bengali">{userName}</h3>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-emerald-100 text-xs font-bengali mb-1">মোট স্কোর</p>
+              <p className="text-3xl font-bold font-mono">{toBengaliNumber(userStats.totalScore)}</p>
+            </div>
+          </div>
+          <div className="flex gap-4 text-sm font-bengali text-emerald-100">
+            <span className="flex items-center gap-1">
+              <CheckCircle2 className="w-4 h-4" /> {toBengaliNumber(userStats.correctAnswers)} সঠিক উত্তর
+            </span>
+            <span className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" /> {toBengaliNumber(userStats.quizzesPlayed)} টি কুইজ
+            </span>
+          </div>
+        </div>
+
+        <h3 className="text-lg font-bold font-bengali text-stone-600 dark:text-stone-400 mb-4">ক্যাটাগরি নির্বাচন করুন</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {QUIZ_CATEGORIES.map((category) => (
+            <motion.button
+              key={category.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedCategory(category.id)}
+              className="bg-white dark:bg-stone-900 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 text-left hover:border-emerald-500/30 transition-all group relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-900/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+              
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mb-4 text-emerald-600 dark:text-emerald-400">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold font-bengali text-stone-800 dark:text-stone-100 mb-1">
+                  {category.title}
+                </h3>
+                <p className="text-sm text-stone-500 dark:text-stone-400 font-bengali">
+                  {category.description}
+                </p>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Quiz Interface (Question View)
   if (filteredQuestions.length === 0) {
     return <div className="p-8 text-center">Loading questions...</div>;
   }
@@ -153,21 +423,19 @@ export default function IslamicQuiz() {
   return (
     <div className="space-y-6 pb-20">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold font-bengali text-stone-800 dark:text-stone-100 flex items-center gap-2">
-          <Brain className="w-6 h-6 text-emerald-600" />
-          ইসলামিক কুইজ
-        </h2>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setSelectedCategory(null)}
+            className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800"
+          >
+            <ChevronRight className="w-5 h-5 rotate-180" />
+          </button>
+          <h2 className="text-xl font-bold font-bengali text-stone-800 dark:text-stone-100">
+            {QUIZ_CATEGORIES.find(c => c.id === selectedCategory)?.title}
+          </h2>
+        </div>
         
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowLeaderboard(!showLeaderboard)}
-            className={cn(
-              "p-2 rounded-lg transition-colors",
-              showLeaderboard ? "bg-emerald-100 text-emerald-600" : "bg-stone-100 dark:bg-stone-800 text-stone-500"
-            )}
-          >
-            <Trophy className="w-5 h-5" />
-          </button>
           <select 
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as any)}
@@ -182,57 +450,7 @@ export default function IslamicQuiz() {
       </div>
 
       <AnimatePresence mode="wait">
-        {showLeaderboard ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-white dark:bg-stone-900 rounded-2xl p-6 shadow-sm border border-stone-100 dark:border-stone-800"
-          >
-            <h3 className="text-xl font-bold font-bengali mb-6 flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-yellow-500" />
-              লিডারবোর্ড
-            </h3>
-            
-            <div className="space-y-3">
-              {leaderboard.length > 0 ? (
-                leaderboard.map((entry, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-800/50 rounded-xl">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center font-bold font-mono",
-                        idx === 0 ? "bg-yellow-100 text-yellow-700" :
-                        idx === 1 ? "bg-stone-200 text-stone-700" :
-                        idx === 2 ? "bg-orange-100 text-orange-700" :
-                        "bg-stone-100 dark:bg-stone-800 text-stone-500"
-                      )}>
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <p className="font-bold font-bengali text-stone-800 dark:text-stone-100">{entry.name}</p>
-                        <p className="text-xs text-stone-400">{entry.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-lg">
-                        {toBengaliNumber(entry.score)}/{toBengaliNumber(entry.total)}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-stone-500 py-8 font-bengali">এখনও কোন স্কোর নেই</p>
-              )}
-            </div>
-            
-            <button
-              onClick={() => setShowLeaderboard(false)}
-              className="w-full mt-6 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 rounded-xl font-bold font-bengali hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
-            >
-              কুইজে ফিরে যান
-            </button>
-          </motion.div>
-        ) : showScore ? (
+        {showScore ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -261,7 +479,7 @@ export default function IslamicQuiz() {
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors w-full"
               >
                 <RefreshCw className="w-5 h-5" />
-                আবার খেলুন
+                অন্য ক্যাটাগরি খেলুন
               </button>
               <button
                 onClick={() => setShowLeaderboard(true)}

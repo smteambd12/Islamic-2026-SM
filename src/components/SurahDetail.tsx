@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Play, Pause, Copy, Check, Share2 } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Copy, Check, Share2, Heart } from 'lucide-react';
 import { cn, toBengaliNumber } from '../lib/utils';
 import { useAudio } from '../context/AudioContext';
 import axios from 'axios';
@@ -17,17 +17,67 @@ interface Verse {
   audio: string;
 }
 
+interface BookmarkItem {
+  number: number;
+  text: string;
+  translation: string;
+  numberInSurah: number;
+  surah: {
+    number: number;
+    name: string;
+    englishName: string;
+  };
+}
+
 export default function SurahDetail({ surahNumber, onBack }: SurahDetailProps) {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [loading, setLoading] = useState(true);
   const [surahInfo, setSurahInfo] = useState<any>(null);
   const [copiedVerse, setCopiedVerse] = useState<number | null>(null);
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
   
   const { playTrack, setPlaylist, currentTrack, isPlaying, togglePlay } = useAudio();
 
   useEffect(() => {
     fetchSurahData();
+    loadBookmarks();
   }, [surahNumber]);
+
+  const loadBookmarks = () => {
+    const saved = localStorage.getItem('bookmarks');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setBookmarks(parsed.map((b: BookmarkItem) => b.number));
+    }
+  };
+
+  const toggleBookmark = (verse: Verse) => {
+    const saved = localStorage.getItem('bookmarks');
+    let currentBookmarks: BookmarkItem[] = saved ? JSON.parse(saved) : [];
+    
+    const exists = currentBookmarks.some(b => b.number === verse.number);
+    
+    if (exists) {
+      currentBookmarks = currentBookmarks.filter(b => b.number !== verse.number);
+      setBookmarks(bookmarks.filter(id => id !== verse.number));
+    } else {
+      const newBookmark: BookmarkItem = {
+        number: verse.number,
+        text: verse.text,
+        translation: verse.translation,
+        numberInSurah: verse.numberInSurah,
+        surah: {
+          number: surahInfo.number,
+          name: surahInfo.name,
+          englishName: surahInfo.englishName
+        }
+      };
+      currentBookmarks.push(newBookmark);
+      setBookmarks([...bookmarks, verse.number]);
+    }
+    
+    localStorage.setItem('bookmarks', JSON.stringify(currentBookmarks));
+  };
 
   const fetchSurahData = async () => {
     try {
@@ -137,6 +187,16 @@ export default function SurahDetail({ surahNumber, onBack }: SurahDetailProps) {
                 </span>
                 
                 <div className="flex gap-2">
+                  <button 
+                    onClick={() => toggleBookmark(verse)}
+                    className={cn(
+                      "p-2 transition-colors",
+                      bookmarks.includes(verse.number) ? "text-red-500" : "text-stone-400 hover:text-red-500"
+                    )}
+                    title="বুকমার্ক"
+                  >
+                    <Heart className={cn("w-4 h-4", bookmarks.includes(verse.number) && "fill-current")} />
+                  </button>
                   <button 
                     onClick={() => handleCopy(verse.text, verse.translation, verse.number)}
                     className="p-2 text-stone-400 hover:text-emerald-600 transition-colors"
