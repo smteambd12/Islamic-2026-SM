@@ -42,7 +42,15 @@ function AppContent() {
   const { latitude, longitude, loading: locationLoading } = useLocation();
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem('splashShown');
+  });
+
+  useEffect(() => {
+    if (!showSplash) {
+      sessionStorage.setItem('splashShown', 'true');
+    }
+  }, [showSplash]);
 
   useEffect(() => {
     if (latitude && longitude) {
