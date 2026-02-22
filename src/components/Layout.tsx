@@ -88,7 +88,7 @@ export default function Layout({ children }: LayoutProps) {
       <header className="lg:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-200 dark:border-stone-800 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 shadow-sm bg-white">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
+            <img src="/logo.svg" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
           </div>
           <div>
             <h1 className="text-lg font-bold font-bengali text-stone-800 dark:text-stone-100 leading-none">ইসলামিক</h1>
@@ -115,7 +115,7 @@ export default function Layout({ children }: LayoutProps) {
         <aside className="hidden lg:flex fixed top-0 left-0 z-40 h-screen w-64 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex-col shadow-xl">
           <div className="p-6 flex items-center gap-3 border-b border-stone-100 dark:border-stone-800">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 bg-white">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
+              <img src="/logo.svg" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
             </div>
             <div>
               <h1 className="text-lg font-bold font-bengali text-stone-800 dark:text-stone-100 leading-none">ইসলামিক</h1>
