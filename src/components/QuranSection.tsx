@@ -5,6 +5,7 @@ import QuranSearch from './QuranSearch';
 import SurahDetail from './SurahDetail';
 import axios from 'axios';
 import { HADITH_COLLECTION, Hadith } from '../data/hadithData';
+import { FALLBACK_VERSES } from '../data/quranData';
 import { useAudio } from '../context/AudioContext';
 
 interface Surah {
@@ -55,35 +56,62 @@ export default function QuranSection() {
       setLoadingVerses(true);
       const newVerses: RandomVerse[] = [];
       
-      // Fetch 3 random verses in parallel to avoid 500 error on page endpoint
+      // Fetch 3 random verses in parallel
       const promises = Array(3).fill(0).map(() => {
         const randomAyah = Math.floor(Math.random() * 6236) + 1;
-        return axios.get(`https://api.alquran.cloud/v1/ayah/${randomAyah}/editions/quran-uthmani,bn.bengali`);
+        return axios.get(`https://api.alquran.cloud/v1/ayah/${randomAyah}/editions/quran-uthmani,bn.bengali`)
+          .then(response => ({ status: 'fulfilled', value: response } as PromiseFulfilledResult<any>))
+          .catch(error => ({ status: 'rejected', reason: error } as PromiseRejectedResult));
       });
 
       const results = await Promise.all(promises);
+      let successCount = 0;
 
-      results.forEach(response => {
-        const arabic = response.data.data[0];
-        const bengali = response.data.data[1];
-        
-        newVerses.push({
-          number: arabic.number,
-          text: arabic.text,
-          translation: bengali.text,
-          surah: arabic.surah,
-          numberInSurah: arabic.numberInSurah,
-          audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${arabic.number}.mp3`
-        });
+      results.forEach(result => {
+        if (result.status === 'fulfilled') {
+          const response = result.value;
+          const arabic = response.data.data[0];
+          const bengali = response.data.data[1];
+          
+          if (arabic && bengali) {
+            newVerses.push({
+              number: arabic.number,
+              text: arabic.text,
+              translation: bengali.text,
+              surah: arabic.surah,
+              numberInSurah: arabic.numberInSurah,
+              audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${arabic.number}.mp3`
+            });
+            successCount++;
+          }
+        }
       });
+
+      // If we failed to fetch enough verses, fill with fallbacks
+      if (successCount < 3) {
+        console.warn(`Failed to fetch all random verses. Using fallbacks for ${3 - successCount} verses.`);
+        const shuffledFallbacks = [...FALLBACK_VERSES].sort(() => Math.random() - 0.5);
+        
+        for (let i = 0; i < 3 - successCount; i++) {
+          const fallback = shuffledFallbacks[i % shuffledFallbacks.length];
+          // Check if already added to avoid duplicates if possible (though random fetch might duplicate too)
+          if (!newVerses.some(v => v.number === fallback.number)) {
+             newVerses.push(fallback);
+          }
+        }
+      }
 
       setRandomVerses(newVerses);
     } catch (error) {
       console.error("Error fetching random verses:", error);
+      // Use full fallback if everything crashes
+      setRandomVerses(FALLBACK_VERSES);
     } finally {
       setLoadingVerses(false);
     }
   };
+
+
 
   const loadMoreHadiths = () => {
     const currentLength = visibleHadiths.length;

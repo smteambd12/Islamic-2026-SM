@@ -16,7 +16,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'sleep',
     title: 'ঘুমানোর আগে দোয়া',
     arabic: 'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا',
-    transliteration: 'Allahumma bismika amutu wa ahya',
+    transliteration: 'আল্লাহুম্মা বিসমিকা আমুতু ওয়া আহইয়া',
     translation: 'হে আল্লাহ! আপনার নামেই আমি মারা যাই (ঘুমাই) এবং আপনার নামেই জীবিত হই (জেগে উঠি)।',
     icon: Moon
   },
@@ -25,7 +25,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'sleep',
     title: 'ঘুম থেকে উঠার পর দোয়া',
     arabic: 'الْحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
-    transliteration: 'Alhamdulillahil ladhi ahyana ba\'da ma amatana wa ilaihin nushur',
+    transliteration: 'আলহামদুলিল্লাহিল লাজি আহইয়ানা বা\'দা মা আমাতানা ওয়া ইলাইহিন নুশুর',
     translation: 'সকল প্রশংসা আল্লাহর জন্য যিনি আমাদের মৃত্যু (ঘুম)র পর আমাদের জীবন দান করলেন এবং তাঁর দিকেই আমাদের পুনরুত্থান।',
     icon: Sun
   },
@@ -34,7 +34,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'food',
     title: 'খাওয়ার শুরুর দোয়া',
     arabic: 'بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ',
-    transliteration: 'Bismillahi wa \'ala barakatillah',
+    transliteration: 'বিসমিল্লাহি ওয়া আলা বারাকাতিল্লাহ',
     translation: 'আল্লাহর নামে এবং আল্লাহর বরকতের ওপর (খাওয়া শুরু করলাম)।',
     icon: Utensils
   },
@@ -43,7 +43,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'food',
     title: 'খাওয়ার শেষের দোয়া',
     arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ',
-    transliteration: 'Alhamdulillahil ladhi at\'amana wa saqana wa ja\'alana muslimin',
+    transliteration: 'আলহামদুলিল্লাহিল লাজি আত\'আমানা ওয়া সাকানা ওয়া জা\'আলানা মুসলিমিন',
     translation: 'সকল প্রশংসা আল্লাহর জন্য যিনি আমাদের খাওয়ালেন, পান করালেন এবং আমাদের মুসলিম বানালেন।',
     icon: Utensils
   },
@@ -52,7 +52,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'hygiene',
     title: 'টয়লেটে প্রবেশের দোয়া',
     arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',
-    transliteration: 'Allahumma inni a\'udhu bika minal khubuthi wal khaba\'ith',
+    transliteration: 'আল্লাহুম্মা ইন্নি আউযুবিকা মিনাল খুবুসি ওয়াল খাবায়িস',
     translation: 'হে আল্লাহ! আমি আপনার কাছে অপবিত্র জিন (নারী ও পুরুষ) থেকে আশ্রয় চাইছি।',
     icon: DoorOpen
   },
@@ -61,7 +61,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'hygiene',
     title: 'টয়লেট থেকে বের হওয়ার দোয়া',
     arabic: 'غُفْرَانَكَ الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الْأَذَى وَعَافَانِي',
-    transliteration: 'Ghufranak, Alhamdulillahi ladhi adhhaba \'annil adha wa \'afani',
+    transliteration: 'গুফরানাকা, আলহামদুলিল্লাহিল লাজি আযহাবা আন্নিল আযা ওয়া আফানি',
     translation: 'হে আল্লাহ! আমি আপনার ক্ষমা চাই। সকল প্রশংসা আল্লাহর জন্য যিনি আমার থেকে কষ্টদায়ক বস্তু দূর করেছেন এবং আমাকে সুস্থতা দান করেছেন।',
     icon: DoorOpen
   },
@@ -70,7 +70,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'home',
     title: 'ঘরে প্রবেশের দোয়া',
     arabic: 'بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى رَبِّنَا تَوَكَّلْنَا',
-    transliteration: 'Bismillahi walajna, wa bismillahi kharajna, wa \'ala rabbina tawakkalna',
+    transliteration: 'বিসমিল্লাহি ওয়ালাজনা, ওয়া বিসমিল্লাহি খারাজনা, ওয়া আলা রাব্বিনা তাওয়াক্কালনা',
     translation: 'আল্লাহর নামে আমরা প্রবেশ করলাম, আল্লাহর নামে আমরা বের হলাম এবং আমাদের রবের ওপর আমরা ভরসা করলাম।',
     icon: Home
   },
@@ -79,7 +79,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'hygiene',
     title: 'ওযুর শুরুর দোয়া',
     arabic: 'بِسْمِ ٱللَّٰهِ',
-    transliteration: 'Bismillah',
+    transliteration: 'বিসমিল্লাহ',
     translation: 'আল্লাহর নামে শুরু করছি।',
     icon: Droplets
   },
@@ -88,7 +88,7 @@ export const DAILY_DUAS: DailyDua[] = [
     category: 'hygiene',
     title: 'ওযুর শেষের দোয়া',
     arabic: 'أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',
-    transliteration: 'Ash-hadu an la ilaha illallahu wahdahu la sharika lahu wa ash-hadu anna Muhammadan \'abduhu wa rasuluh',
+    transliteration: 'আশহাদু আল লা ইলাহা ইল্লাল্লাহু ওয়াহদাহু লা শারিকা লাহু ওয়া আশহাদু আন্না মুহাম্মাদান আবদুহু ওয়া রাসুলুহু',
     translation: 'আমি সাক্ষ্য দিচ্ছি যে, আল্লাহ ছাড়া কোনো মাবুদ নেই, তিনি এক, তাঁর কোনো শরীক নেই। আমি আরও সাক্ষ্য দিচ্ছি যে, মুহাম্মদ (সা.) তাঁর বান্দা ও রাসূল।',
     icon: Droplets
   }

@@ -22,6 +22,10 @@ import { getPrayerTimes, PrayerTimes } from './services/api';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AudioProvider } from './context/AudioContext';
 import DailyLife from './components/DailyLife';
+import LifeCycle from './components/LifeCycle';
+import NamesOfAllah from './components/NamesOfAllah';
+import ZakatCalculator from './components/ZakatCalculator';
+import DeveloperPage from './components/DeveloperPage';
 
 function Dashboard({ timings, loading }: { timings: PrayerTimes | null, loading: boolean }) {
   return (
@@ -84,6 +88,10 @@ function AppContent() {
         <Route path="/prayer-info" element={<PrayerLearning />} />
         <Route path="/ramadan" element={<Ramadan timings={prayerTimes} />} />
         <Route path="/daily" element={<DailyLife />} />
+        <Route path="/life-cycle" element={<LifeCycle />} />
+        <Route path="/names-of-allah" element={<NamesOfAllah />} />
+        <Route path="/zakat" element={<ZakatCalculator />} />
+        <Route path="/developer" element={<DeveloperPage />} />
         <Route path="/events" element={<IslamicEvents />} />
         <Route path="/quiz" element={<IslamicQuiz />} />
         <Route path="/ai" element={<IslamicAI />} />

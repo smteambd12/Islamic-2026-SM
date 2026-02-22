@@ -1,76 +1,92 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Moon, Star } from 'lucide-react';
 
-export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
-  React.useEffect(() => {
-    const timer = setTimeout(onComplete, 3000);
+interface SplashScreenProps {
+  onComplete: () => void;
+}
+
+export default function SplashScreen({ onComplete }: SplashScreenProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onComplete();
+    }, 3000); // Show splash for 3 seconds
+
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 bg-[#1a1a2e] flex items-center justify-center z-50 overflow-hidden">
-      {/* Background Stars */}
-      {[...Array(20)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute bg-white rounded-full"
-          initial={{ 
-            opacity: 0, 
-            x: Math.random() * window.innerWidth, 
-            y: Math.random() * window.innerHeight,
-            scale: Math.random() * 0.5 + 0.5
-          }}
-          animate={{ 
-            opacity: [0, 1, 0],
-            scale: [0.5, 1, 0.5]
-          }}
-          transition={{ 
-            duration: Math.random() * 3 + 2, 
-            repeat: Infinity,
-            delay: Math.random() * 2
-          }}
-          style={{ width: Math.random() * 4 + 1, height: Math.random() * 4 + 1 }}
-        />
-      ))}
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900 overflow-hidden">
+      {/* Background Stars Animation */}
+      <div className="absolute inset-0">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute bg-white rounded-full"
+            initial={{
+              opacity: 0.1,
+              scale: Math.random() * 0.5 + 0.5,
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            animate={{
+              opacity: [0.1, 0.5, 0.1],
+              scale: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              width: Math.random() * 3 + 1,
+              height: Math.random() * 3 + 1,
+            }}
+          />
+        ))}
+      </div>
 
-      <div className="relative z-10 text-center">
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 1.5, type: "spring" }}
-          className="w-32 h-32 mx-auto mb-6 bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.5)]"
-        >
-          <div className="relative">
-            <Moon className="w-16 h-16 text-white fill-current" />
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute -top-2 -right-2"
-            >
-              <Star className="w-8 h-8 text-yellow-300 fill-current" />
-            </motion.div>
-          </div>
-        </motion.div>
+      {/* Logo Animation */}
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 flex flex-col items-center"
+      >
+        <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 mb-6 shadow-2xl ring-4 ring-emerald-500/20 flex items-center justify-center">
+           <img 
+             src="/logo.png" 
+             alt="Islamic Companion Logo" 
+             className="w-full h-full object-contain drop-shadow-lg"
+             onError={(e) => e.currentTarget.src = '/icon-192.png'}
+           />
+        </div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-4xl font-bold text-white font-bengali mb-2"
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="text-3xl md:text-4xl font-bold text-white font-bengali text-center"
         >
-          ইসলামিক কম্প্যানিয়ন
+          ইসলামিক <span className="text-emerald-400">কম্প্যানিয়ন</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="text-emerald-200/80 font-bengali text-lg"
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="text-slate-400 mt-2 font-bengali text-sm md:text-base"
         >
-          আপনার প্রতিদিনের ইবাদতের সঙ্গী
+          আপনার দৈনন্দিন ইবাদতের সাথী
         </motion.p>
-      </div>
+      </motion.div>
+
+      {/* Loading Indicator */}
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: 200 }}
+        transition={{ delay: 0.5, duration: 2.5, ease: "easeInOut" }}
+        className="absolute bottom-20 h-1 bg-emerald-500 rounded-full"
+      />
     </div>
   );
 }

@@ -16,46 +16,41 @@ export const RAMADAN_DUAS: Dua[] = [
     id: 'sehri-dua',
     title: 'রোজার নিয়ত (সেহরির দোয়া)',
     arabic: 'نَوَيْتُ اَنْ اُصُوْمَ غَدًا مِّنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اللهُ فَتَقَبَّل مني إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيم',
-    transliteration: 'Nawaitu an usuma ghadam min shahri ramadanal mubarak, fardallaka ya Allahu fatakabbal minni innaka antas samiul alim.',
+    transliteration: 'নাওয়াইতু আন উছুমা গাদাম মিন শাহরি রমাদানাল মুবারাক, ফারদাল্লাকা ইয়া আল্লাহু ফাতাকাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।',
     translation: 'হে আল্লাহ! আমি আগামীকাল পবিত্র রমজানের তোমার পক্ষ থেকে নির্ধারিত ফরজ রোজা রাখার ইচ্ছা পোষণ (নিয়্যত) করলাম। অতএব তুমি আমার পক্ষ থেকে (আমার রোজা তথা পানাহার থেকে বিরত থাকাকে) কবুল কর, নিশ্চয়ই তুমি সর্বশ্রোতা ও সর্বজ্ঞানী।',
     category: 'sehri',
-    // audioUrl removed as per user request for correctness
   },
   {
     id: 'iftar-dua',
     title: 'ইফতারের দোয়া',
     arabic: 'اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ',
-    transliteration: 'Allahumma laka sumtu wa ala rizqika aftartu.',
+    transliteration: 'আল্লাহুম্মা লাকা ছুমতু ওয়া আলা রিযকিকা আফতারতু।',
     translation: 'হে আল্লাহ! আমি তোমারই সন্তুষ্টির জন্য রোজা রেখেছি এবং তোমারই দেয়া রিজিকের মাধ্যমে ইফতার করছি।',
     category: 'iftar',
-    // audioUrl removed
   },
   {
     id: 'ashra-1',
     title: 'প্রথম ১০ দিনের দোয়া (রহমত)',
     arabic: 'رَبِّ اغْفِرْ وَارْحَمْ وَأَنْتَ خَيْرُ الرَّاحِمِينَ',
-    transliteration: 'Rabbi-ghfir war-ham wa anta khairur-rahimeen.',
+    transliteration: 'রাব্বিগফির ওয়ারহাম ওয়া আনতা খাইরুর রাহিমীন।',
     translation: 'হে আমার প্রতিপালক! আমাকে ক্ষমা করুন এবং আমার প্রতি রহমত বর্ষণ করুন। আপনিই তো সর্বশ্রেষ্ঠ দয়ালু।',
     category: 'ashra',
-    // audioUrl removed
   },
   {
     id: 'ashra-2',
     title: 'দ্বিতীয় ১০ দিনের দোয়া (মাগফিরাত)',
     arabic: 'أَسْتَغْفِرُ اللهَ رَبِّي مِنْ كُلِّ ذَنْبٍ وَأَتُوبُ إِلَيْهِ',
-    transliteration: 'Astaghfirullaha rabbi min kulli zambin wa atubu ilaih.',
+    transliteration: 'আস্তাগফিরুল্লাহা রাব্বি মিন কুল্লি যাম্বিন ওয়া আতুবু ইলাইহি।',
     translation: 'আমি আল্লাহর কাছে ক্ষমা প্রার্থনা করছি আমার সকল পাপ থেকে এবং আমি তাঁর দিকেই ফিরে যাচ্ছি।',
     category: 'ashra',
-    // audioUrl removed
   },
   {
     id: 'ashra-3',
     title: 'তৃতীয় ১০ দিনের দোয়া (নাজাত)',
     arabic: 'اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ',
-    transliteration: 'Allahumma ajirni minan nar.',
+    transliteration: 'আল্লাহুম্মা আজিরনি মিনান নার।',
     translation: 'হে আল্লাহ! আমাকে জাহান্নামের আগুন থেকে মুক্তি দিন।',
     category: 'ashra',
-    // audioUrl removed
   }
 ];
 
