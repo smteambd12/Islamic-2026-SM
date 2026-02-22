@@ -79,9 +79,14 @@ export default function Scholars() {
   const fetchNewScholar = async () => {
     setLoading(true);
     try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key not found");
+      }
+
       const existingNames = scholars.map(s => s.name).join(", ");
       
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+      const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `Provide details (in Bengali) for a famous Islamic scholar, Sufi saint, or companion of the Prophet (SAW) who is NOT in this list: [${existingNames}]. 
       Include their name (with (রহ.) or (রা.)), title (in Bengali), era (e.g., birth-death year), a short description (2-3 sentences in Bengali), and 1-2 famous quotes (in Bengali).`;
@@ -107,7 +112,7 @@ export default function Scholars() {
         }
       });
 
-      const text = result.text;
+      const text = result.response.text;
       
       if (text) {
         const newScholar = JSON.parse(text);
@@ -115,6 +120,7 @@ export default function Scholars() {
       }
     } catch (error) {
       console.error("Error fetching scholar:", error);
+      // Optional: Show a toast or alert to the user
     } finally {
       setLoading(false);
     }

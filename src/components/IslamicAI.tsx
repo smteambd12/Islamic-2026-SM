@@ -50,7 +50,12 @@ export default function IslamicAI() {
     setLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key not found. Please set GEMINI_API_KEY in your environment variables.");
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       
       const systemInstruction = `
         You are a helpful and knowledgeable Islamic AI Assistant embedded in the 'Islamic Companion' web app.
@@ -83,11 +88,17 @@ export default function IslamicAI() {
       if (responseText) {
         setMessages(prev => [...prev, { role: 'model', text: responseText, timestamp: new Date() }]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI Error:", error);
+      let errorMessage = "দুঃখিত, একটি যান্ত্রিক ত্রুটি হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।";
+      
+      if (error.message?.includes("API Key not found")) {
+        errorMessage = "দুঃখিত, সিস্টেমের API Key সেট করা নেই। অনুগ্রহ করে ডেভেলপারকে জানান।";
+      }
+
       setMessages(prev => [...prev, { 
         role: 'model', 
-        text: "দুঃখিত, একটি যান্ত্রিক ত্রুটি হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।", 
+        text: errorMessage, 
         timestamp: new Date() 
       }]);
     } finally {
