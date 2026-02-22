@@ -54,7 +54,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       >
         <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-4 mb-6 shadow-2xl ring-4 ring-emerald-500/20 flex items-center justify-center">
            <img 
-             src="/logo.png" 
+             src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh766hUeUaStzJ9N-o0yOrSDajYK9GFHHw3bi9coldaLgN4PLsR6joA_u9Loc6on_gAg_UFlLF9tulHRZ089ypVeyLK42SsUa1sEenb6BNJlIN3JRqlPEV499SDtmbfjDWDXRPG1GKq8-mnGwl4PIeBCRqqUaAorsZCzumkpUNbInnZtwBjs0e2T4ycQKR8/s1024/10319.png" 
              alt="Islamic Companion Logo" 
              className="w-full h-full object-contain drop-shadow-lg"
              onError={(e) => e.currentTarget.src = '/icon-192.png'}

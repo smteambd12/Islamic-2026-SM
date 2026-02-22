@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun, BookOpen, Clock, Home, Menu, X, Heart, Activity, Calendar, AlignCenter, Star, Brain, MessageSquare, Baby, Grid, Calculator, Sparkles, Info, Crown } from 'lucide-react';
+import { Moon, Sun, BookOpen, Clock, Home, Menu, X, Heart, Activity, Calendar, AlignCenter, Star, Brain, MessageSquare, Baby, Grid, Calculator, Sparkles, Info, Crown, Hourglass, User, MapPin, Bot } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -60,6 +60,11 @@ export default function Layout({ children }: LayoutProps) {
     { path: '/ramadan', label: 'রমজান', icon: Moon },
     { path: '/daily', label: 'নিত্যদিন', icon: Heart },
     { path: '/life-cycle', label: 'জীবন চক্র', icon: Baby },
+    { path: '/islamic-names', label: 'নামের বই', icon: BookOpen },
+    { path: '/age-calculator', label: 'বয়স', icon: Hourglass },
+    { path: '/scholars', label: 'মনিষী', icon: User },
+    { path: '/ai', label: 'ইসলামিক AI', icon: Bot },
+    { path: '/qadr-foundation', label: 'কদর ফাউন্ডেশন', icon: Heart },
     { path: '/names-of-allah', label: '৯৯ নাম', icon: Sparkles },
     { path: '/zakat', label: 'যাকাত', icon: Calculator },
     { path: '/tasbeeh', label: 'তাসবীহ', icon: AlignCenter },
@@ -88,7 +93,7 @@ export default function Layout({ children }: LayoutProps) {
       <header className="lg:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-200 dark:border-stone-800 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 shadow-sm bg-white">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh766hUeUaStzJ9N-o0yOrSDajYK9GFHHw3bi9coldaLgN4PLsR6joA_u9Loc6on_gAg_UFlLF9tulHRZ089ypVeyLK42SsUa1sEenb6BNJlIN3JRqlPEV499SDtmbfjDWDXRPG1GKq8-mnGwl4PIeBCRqqUaAorsZCzumkpUNbInnZtwBjs0e2T4ycQKR8/s1024/10319.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
           </div>
           <div>
             <h1 className="text-lg font-bold font-bengali text-stone-800 dark:text-stone-100 leading-none">ইসলামিক</h1>
@@ -115,7 +120,7 @@ export default function Layout({ children }: LayoutProps) {
         <aside className="hidden lg:flex fixed top-0 left-0 z-40 h-screen w-64 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex-col shadow-xl">
           <div className="p-6 flex items-center gap-3 border-b border-stone-100 dark:border-stone-800">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 bg-white">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh766hUeUaStzJ9N-o0yOrSDajYK9GFHHw3bi9coldaLgN4PLsR6joA_u9Loc6on_gAg_UFlLF9tulHRZ089ypVeyLK42SsUa1sEenb6BNJlIN3JRqlPEV499SDtmbfjDWDXRPG1GKq8-mnGwl4PIeBCRqqUaAorsZCzumkpUNbInnZtwBjs0e2T4ycQKR8/s1024/10319.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.src = '/icon-192.png'} />
             </div>
             <div>
               <h1 className="text-lg font-bold font-bengali text-stone-800 dark:text-stone-100 leading-none">ইসলামিক</h1>
