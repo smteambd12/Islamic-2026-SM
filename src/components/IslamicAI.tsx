@@ -99,7 +99,7 @@ export default function IslamicAI() {
       `;
 
       const chat = ai.chats.create({
-        model: "gemini-2.0-flash",
+        model: "gemini-1.5-flash",
         config: {
           systemInstruction: systemInstruction,
         },
@@ -118,6 +118,10 @@ export default function IslamicAI() {
     } catch (error: any) {
       console.error("AI Error:", error);
       let errorMessage = "দুঃখিত, একটি যান্ত্রিক ত্রুটি হয়েছে। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।";
+      
+      if (error.message) {
+        errorMessage += `\n\nError Details: ${error.message}`;
+      }
       
       if (error.message?.includes("API Key not found")) {
         errorMessage = "দুঃখিত, সিস্টেমের API Key সেট করা নেই। অনুগ্রহ করে ডেভেলপারকে জানান।";
