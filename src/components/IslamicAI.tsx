@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Sparkles, RefreshCcw, Copy, Check, MessageSquare, Trash2, Share2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, RefreshCcw, Copy, Check, MessageSquare, Trash2, Share2, Info, Code, Heart, BookOpen, Moon, Sun } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 import { cn } from '../lib/utils';
 
 const SUGGESTED_QUESTIONS = [
-  "এই অ্যাপটি কে তৈরি করেছেন?",
-  "নামাজের সঠিক সময় কীভাবে জানব?",
-  "যাকাত আদায়ের নিয়ম কী?",
-  "আজকের দিনের বিশেষ আমল কী?",
-  "কুরআন তিলাওয়াতের ফজিলত",
-  "ইসলামিক কম্প্যানিয়ন অ্যাপে কী কী আছে?"
+  { icon: <Code className="w-4 h-4" />, text: "এই অ্যাপটি কে তৈরি করেছেন?" },
+  { icon: <Moon className="w-4 h-4" />, text: "আজকের দিনের বিশেষ আমল কী?" },
+  { icon: <BookOpen className="w-4 h-4" />, text: "সূরা ইখলাসের ফজিলত বলুন" },
+  { icon: <Heart className="w-4 h-4" />, text: "যাকাত আদায়ের নিয়ম কী?" },
 ];
 
 interface Message {
@@ -24,14 +22,16 @@ export default function IslamicAI() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: "আসসালামু আলাইকুম! আমি ইসলামিক কম্প্যানিয়ন এআই। আমি আপনাকে ইসলাম এবং এই অ্যাপ সম্পর্কে যেকোনো তথ্য দিয়ে সাহায্য করতে পারি। আমাকে প্রশ্ন করুন।",
+      text: "আসসালামু আলাইকুম! আমি **ইসলামিক কম্প্যানিয়ন এআই**। \n\nআমি আপনাকে ইসলাম, কুরআন, হাদিস এবং এই অ্যাপ সম্পর্কে যেকোনো তথ্য দিয়ে সাহায্য করতে পারি। \n\nআপনার মনে কোনো প্রশ্ন থাকলে নির্দ্বিধায় জিজ্ঞাসা করুন।",
       timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [apiKeyError, setApiKeyError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,7 +39,15 @@ export default function IslamicAI() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, loading]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [input]);
 
   const handleSend = async (text: string = input) => {
     if (!text.trim()) return;
@@ -49,8 +57,15 @@ export default function IslamicAI() {
     setInput('');
     setLoading(true);
 
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
+      // Use environment variable or the hardcoded fallback (only for this specific user request)
+      const apiKey = process.env.GEMINI_API_KEY || "AIzaSyCFvLBiH168BcR_qaPebKU2HEaRX1VSTtE";
+      
       if (!apiKey) {
         throw new Error("API Key not found. Please set GEMINI_API_KEY in your environment variables.");
       }
@@ -58,17 +73,29 @@ export default function IslamicAI() {
       const ai = new GoogleGenAI({ apiKey });
       
       const systemInstruction = `
-        You are a helpful and knowledgeable Islamic AI Assistant embedded in the 'Islamic Companion' web app.
-        Your developer and creator is **MD SOYEB**. Always mention him with respect if asked about who created you or this app.
+        You are a highly advanced, knowledgeable, and polite Islamic AI Assistant embedded in the 'Islamic Companion' web app.
         
-        Your purpose is to:
-        1. Answer questions about Islam, Quran, Hadith, and daily life rulings (Masala) accurately and respectfully based on authentic sources.
-        2. Answer questions about this application ('Islamic Companion'). It features Prayer Times, Quran, Hadith, Zakat Calculator, Tasbeeh, Islamic Names, Age Calculator, Scholar Biographies, and Qadr Foundation integration.
-        3. Maintain a polite, spiritual, and supportive tone.
-        4. Reply primarily in Bengali unless the user asks in another language.
-        5. If asked about the developer, say: "এই অ্যাপটি এবং আমাকে তৈরি করেছেন **MD SOYEB**। তিনি একজন ফুল-স্ট্যাক ডেভেলপার এবং এই প্রজেক্টের প্রতিষ্ঠাতা।"
+        **CRITICAL INSTRUCTION:**
+        Your developer and creator is **MD SOYEB**. You must ALWAYS mention him with great respect if asked about who created you, who developed this app, or who is the admin.
         
-        Keep answers concise but informative. Use Markdown for formatting.
+        **Your Persona:**
+        - Name: Islamic Companion AI (ইসলামিক কম্প্যানিয়ন এআই)
+        - Tone: Respectful, Spiritual, Calm, Helpful, and Authoritative on Islamic matters (referencing Quran/Hadith).
+        - Language: Primary language is **Bengali**. Only speak English if explicitly asked.
+        
+        **Your Knowledge Base:**
+        1. **Islam:** Quran, Hadith, Fiqh, Seerah, Daily Masala, Prayers, Fasting, Zakat, Hajj, etc.
+        2. **This App ('Islamic Companion'):** 
+           - Features: Prayer Times, Al-Quran, Hadith Collection, Zakat Calculator, Digital Tasbeeh, Islamic Names, Age Calculator, Scholar Biographies, Qadr Foundation.
+           - Purpose: To serve the Muslim Ummah with digital tools.
+        3. **Developer:** **MD SOYEB** (Full Stack Developer & Founder of this project).
+        
+        **Response Guidelines:**
+        - Start with "আসসালামু আলাইকুম" (Peace be upon you) when appropriate.
+        - Use Markdown for formatting (bold, lists, quotes).
+        - Keep answers concise but comprehensive.
+        - If asked about the developer, say: "এই অ্যাপটি এবং আমাকে ডিজাইন ও ডেভেলপ করেছেন **MD SOYEB**। তিনি একজন প্যাশনেট ফুল-স্ট্যাক ডেভেলপার এবং এই প্রজেক্টের প্রতিষ্ঠাতা।"
+        - If asked about specific rulings (Fatwa), advise consulting a local scholar for complex matters, but provide general guidance based on authentic sources.
       `;
 
       const chat = ai.chats.create({
@@ -116,7 +143,7 @@ export default function IslamicAI() {
     setMessages([
       {
         role: 'model',
-        text: "আসসালামু আলাইকুম! আমি ইসলামিক কম্প্যানিয়ন এআই। আমি আপনাকে ইসলাম এবং এই অ্যাপ সম্পর্কে যেকোনো তথ্য দিয়ে সাহায্য করতে পারি। আমাকে প্রশ্ন করুন।",
+        text: "আসসালামু আলাইকুম! আমি **ইসলামিক কম্প্যানিয়ন এআই**। \n\nআমি আপনাকে ইসলাম এবং এই অ্যাপ সম্পর্কে যেকোনো তথ্য দিয়ে সাহায্য করতে পারি।",
         timestamp: new Date()
       }
     ]);
@@ -129,15 +156,18 @@ export default function IslamicAI() {
 
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-[2rem] shadow-lg shrink-0 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl" />
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl animate-pulse" />
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl shadow-inner">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-xl shadow-inner border border-white/10">
               <Bot className="w-8 h-8" />
             </div>
             <div>
               <h1 className="text-2xl font-bold font-bengali">ইসলামিক এআই</h1>
-              <p className="text-emerald-100 text-xs md:text-sm font-bengali opacity-90">আপনার ব্যক্তিগত দ্বীনি সহায়ক</p>
+              <div className="flex items-center gap-2 text-emerald-100">
+                <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse" />
+                <p className="text-xs md:text-sm font-bengali opacity-90">অনলাইন</p>
+              </div>
             </div>
           </div>
           <button 
@@ -145,7 +175,7 @@ export default function IslamicAI() {
             className="p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors text-white/80 hover:text-white"
             title="চ্যাট মুছুন"
           >
-            <Trash2 className="w-5 h-5" />
+            <RefreshCcw className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -194,6 +224,7 @@ export default function IslamicAI() {
                     <button 
                       onClick={() => handleCopy(msg.text, idx)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity text-stone-400 hover:text-emerald-500"
+                      title="কপি করুন"
                     >
                       {copiedIndex === idx ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     </button>
@@ -227,10 +258,11 @@ export default function IslamicAI() {
             {SUGGESTED_QUESTIONS.map((q, idx) => (
               <button
                 key={idx}
-                onClick={() => handleSend(q)}
-                className="whitespace-nowrap px-4 py-2 bg-white dark:bg-stone-900 border border-emerald-100 dark:border-emerald-900/30 rounded-full text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors shadow-sm"
+                onClick={() => handleSend(q.text)}
+                className="flex items-center gap-2 whitespace-nowrap px-4 py-2 bg-white dark:bg-stone-900 border border-emerald-100 dark:border-emerald-900/30 rounded-full text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors shadow-sm"
               >
-                {q}
+                {q.icon}
+                {q.text}
               </button>
             ))}
           </div>
@@ -238,6 +270,7 @@ export default function IslamicAI() {
 
         <div className="bg-white dark:bg-stone-900 p-2 rounded-[2rem] shadow-xl border border-stone-100 dark:border-stone-800 flex items-end gap-2">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -247,7 +280,7 @@ export default function IslamicAI() {
               }
             }}
             placeholder="আপনার প্রশ্ন লিখুন..."
-            className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-stone-800 dark:text-stone-100 placeholder-stone-400 font-bengali resize-none max-h-32 min-h-[50px]"
+            className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-stone-800 dark:text-stone-100 placeholder-stone-400 font-bengali resize-none max-h-32 min-h-[50px] scrollbar-hide"
             rows={1}
           />
           <button

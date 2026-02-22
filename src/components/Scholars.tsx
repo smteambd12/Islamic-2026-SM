@@ -79,7 +79,7 @@ export default function Scholars() {
   const fetchNewScholar = async () => {
     setLoading(true);
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY || "AIzaSyCFvLBiH168BcR_qaPebKU2HEaRX1VSTtE";
       if (!apiKey) {
         throw new Error("API Key not found");
       }
@@ -112,7 +112,7 @@ export default function Scholars() {
         }
       });
 
-      const text = result.response.text;
+      const text = result.text;
       
       if (text) {
         const newScholar = JSON.parse(text);

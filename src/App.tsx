@@ -25,12 +25,10 @@ import DailyLife from './components/DailyLife';
 import LifeCycle from './components/LifeCycle';
 import NamesOfAllah from './components/NamesOfAllah';
 import ZakatCalculator from './components/ZakatCalculator';
-import DeveloperPage from './components/DeveloperPage';
 import AgeCalculator from './components/AgeCalculator';
 import IslamicNames from './components/IslamicNames';
 import Scholars from './components/Scholars';
 import QadrFoundation from './components/QadrFoundation';
-import IslamicAI from './components/IslamicAI';
 
 function Dashboard({ timings, loading }: { timings: PrayerTimes | null, loading: boolean }) {
   return (
@@ -104,9 +102,7 @@ function AppContent() {
         <Route path="/ai" element={<IslamicAI />} />
         <Route path="/events" element={<IslamicEvents />} />
         <Route path="/quiz" element={<IslamicQuiz />} />
-        <Route path="/ai" element={<IslamicAI />} />
         <Route path="/community" element={<CommunityRequests />} />
-        <Route path="/developer" element={<DeveloperPage />} />
       </Routes>
       <GlobalAudioPlayer />
       <InstallPrompt />
