@@ -97,7 +97,7 @@ export default function DeveloperPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
             <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white dark:border-stone-800 shadow-2xl bg-white dark:bg-stone-800">
               <img 
-                src="/developer.svg" 
+                src="/developer.png" 
                 alt="MD SOYEB" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onError={(e) => {
