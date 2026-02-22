@@ -92,7 +92,7 @@ export default function Scholars() {
       Include their name (with (রহ.) or (রা.)), title (in Bengali), era (e.g., birth-death year), a short description (2-3 sentences in Bengali), and 1-2 famous quotes (in Bengali).`;
 
       const result = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "gemini-1.5-flash-latest",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
