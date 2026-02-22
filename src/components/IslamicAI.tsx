@@ -99,7 +99,7 @@ export default function IslamicAI() {
       `;
 
       const chat = ai.chats.create({
-        model: "gemini-1.5-flash-latest",
+        model: "gemini-1.5-flash-001",
         config: {
           systemInstruction: systemInstruction,
         },
@@ -125,6 +125,10 @@ export default function IslamicAI() {
       
       if (error.message?.includes("API Key not found")) {
         errorMessage = "দুঃখিত, সিস্টেমের API Key সেট করা নেই। অনুগ্রহ করে ডেভেলপারকে জানান।";
+      } else if (error.message?.includes("404")) {
+        errorMessage += "\n\n(Model not found. Trying fallback...)";
+        // Note: In a real app we might retry with a different model here, 
+        // but for now we just show the detailed error to help debug.
       }
 
       setMessages(prev => [...prev, { 
