@@ -91,27 +91,43 @@ export default function Scholars() {
       const prompt = `Provide details (in Bengali) for a famous Islamic scholar, Sufi saint, or companion of the Prophet (SAW) who is NOT in this list: [${existingNames}]. 
       Include their name (with (রহ.) or (রা.)), title (in Bengali), era (e.g., birth-death year), a short description (2-3 sentences in Bengali), and 1-2 famous quotes (in Bengali).`;
 
-      const result = await ai.models.generateContent({
-        model: "gemini-1.5-flash-001",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              name: { type: Type.STRING },
-              title: { type: Type.STRING },
-              era: { type: Type.STRING },
-              desc: { type: Type.STRING },
-              quotes: { 
-                type: Type.ARRAY,
-                items: { type: Type.STRING }
+      // Helper to try multiple models
+      const generateWithFallback = async () => {
+        const models = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
+        let lastError;
+
+        for (const model of models) {
+          try {
+            const result = await ai.models.generateContent({
+              model: model,
+              contents: prompt,
+              config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING },
+                    title: { type: Type.STRING },
+                    era: { type: Type.STRING },
+                    desc: { type: Type.STRING },
+                    quotes: { 
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                    }
+                  }
+                }
               }
-            }
+            });
+            return result;
+          } catch (error) {
+            console.warn(`Model ${model} failed:`, error);
+            lastError = error;
           }
         }
-      });
+        throw lastError;
+      };
 
+      const result = await generateWithFallback();
       const text = result.text;
       
       if (text) {

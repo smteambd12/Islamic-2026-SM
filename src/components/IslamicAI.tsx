@@ -98,19 +98,37 @@ export default function IslamicAI() {
         - If asked about specific rulings (Fatwa), advise consulting a local scholar for complex matters, but provide general guidance based on authentic sources.
       `;
 
-      const chat = ai.chats.create({
-        model: "gemini-1.5-flash-001",
-        config: {
-          systemInstruction: systemInstruction,
-        },
-        history: messages.map(m => ({
-          role: m.role,
-          parts: [{ text: m.text }]
-        }))
-      });
+      // Helper function to try multiple models
+      const generateWithFallback = async () => {
+        const models = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
+        let lastError;
 
-      const result = await chat.sendMessage({ message: text });
-      const responseText = result.text;
+        for (const model of models) {
+          try {
+            console.log(`Trying model: ${model}`);
+            const chat = ai.chats.create({
+              model: model,
+              config: {
+                systemInstruction: systemInstruction,
+              },
+              history: messages.map(m => ({
+                role: m.role,
+                parts: [{ text: m.text }]
+              }))
+            });
+
+            const result = await chat.sendMessage({ message: text });
+            return result.text;
+          } catch (error) {
+            console.warn(`Model ${model} failed:`, error);
+            lastError = error;
+            // Continue to next model
+          }
+        }
+        throw lastError;
+      };
+
+      const responseText = await generateWithFallback();
 
       if (responseText) {
         setMessages(prev => [...prev, { role: 'model', text: responseText, timestamp: new Date() }]);
@@ -125,10 +143,6 @@ export default function IslamicAI() {
       
       if (error.message?.includes("API Key not found")) {
         errorMessage = "দুঃখিত, সিস্টেমের API Key সেট করা নেই। অনুগ্রহ করে ডেভেলপারকে জানান।";
-      } else if (error.message?.includes("404")) {
-        errorMessage += "\n\n(Model not found. Trying fallback...)";
-        // Note: In a real app we might retry with a different model here, 
-        // but for now we just show the detailed error to help debug.
       }
 
       setMessages(prev => [...prev, { 
